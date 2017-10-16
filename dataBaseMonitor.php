@@ -147,4 +147,59 @@ class dataBaseMonitor extends CI_Controller {
         }
     }
         
+      /*
+     * 
+     * no more about your triggers 
+     * read your database carefully 
+     */
+    public function databaseTriggers()
+    {
+        echo '<style>body{background:black;color:white;}</style>';
+        exec("mysql  -u ".$this->db->username." --password=".$this->db->password." ".$this->db->database." -e 'show triggers \G'", $output, $return_var);
+        foreach($output as $line)
+        {
+            echo '> '.$line.'<br/>';
+            flush();
+            ob_flush();
+        }
+        
+    }
+    
+    /*
+     * show open tables 
+     * now how many tables opened on your database and whitch tables are in use or locked 
+     *
+     */
+    public function databaseOpenTables()
+    {
+        echo '<style>body{background:black;color:white;}</style>';
+        exec("mysql  -u ".$this->db->username." --password=".$this->db->password." ".$this->db->database." -e 'show open tables from ".$this->db->database." \G'", $output, $return_var);
+        foreach($output as $line)
+        {
+            echo '> '.$line.'<br/>';
+            flush();
+            ob_flush();
+        }        
+    }
+    /* 
+     * flush opened tables to close open files on your db
+     */
+    public function flushOpenedTables()
+    {
+        $data= '<style>body{background:gray;color:white;}</style>';
+       
+        $q=$this->db->query("show open tables from  ".$this->db->database." where in_use=0 and name_locked=0")->result();
+       // print_r($q);
+        $data.='<table border="1" cellpadding="2" cellspascing="2" width="600px"> ';  
+            foreach ($q as $loop) {
+              //  echo $row["totalSize"]    ;
+                $tbl = $loop->Table;
+                $data.='<tr>';
+                $data.='<td>'.$tbl.'=>flushed</td>';
+                $this->db->query("flush table  ".$loop->Table);
+            }
+            $data.='</table>';
+            echo $data;        
+    }
+
 }
