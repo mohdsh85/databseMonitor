@@ -31,7 +31,7 @@ class dataBaseMonitor extends CI_Controller {
             call_user_func_array(array($this, $method), $params);
         else
         {
-            echo 'cant\'t Access this Page:( ';
+            echo 'cant\'t Access this Page:( yes';
         }
     }
     /*
